@@ -17,11 +17,26 @@ def generate_google_ads(client_name, client_info, model='text-davinci-002', temp
     resp = openai.Completion.create(model=model, temperature=temperature, prompt=promptstring, n=n)
     choices = []
     for choice in resp['choices']:
-        choices.append(choice['text'].strip().split('\n')[0])
+        google_ad = choice['text']
+        if choice['finish_reason'] == 'length':
+            google_ad = finish_thought(promptstring + google_ad, len(promptstring))
+        choices.append(google_ad.strip())
     return choices
+
+def finish_thought(thought , len_orig_prompt):
+    response = openai.Completion.create(model='text-davinci-002', temperature=0.7, prompt=thought, n=1)
+    choice = response['choices'][0]
+    if choice['finish_reason'] == 'length':
+        return finish_thought(thought + choice['text'],len_orig_prompt)
+    else:
+        full_text = thought+choice['text']
+        return full_text[len_orig_prompt-1:]
+
+
 
 if __name__ == '__main__':
     client_name = 'pelton-shepherd'
     client_info = open(f'leads/{client_name}.txt','r', encoding='utf8').read()
     choices = generate_google_ads(client_name, client_info, n=5)
-    print(choices)
+    for choice in choices:
+        print(choice)

@@ -30,7 +30,7 @@ def finish_thought(thought, len_orig_prompt):
         return full_text[len_orig_prompt-1:]
 
 if __name__ == '__main__':
-    client_name = 'pelton-shepherd'
+    client_name = 'ouster'
     client_info = open(f'leads/{client_name}.txt','r', encoding='utf8').read()
     choices = generate_company_tweets(client_name, client_info, n=5)
     print(choices)
