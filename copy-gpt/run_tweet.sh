@@ -1,0 +1,1 @@
+export $(cat .env | xargs) && python copy_tweet.py
